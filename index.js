@@ -9,6 +9,35 @@ const config = {
 const app = express();
 app.use(line.middleware(config));
 
+app.post('/send-message', (req, res) => {
+    // 從請求中取得目標用戶 ID 和要發送的訊息
+    const { to, message } = req.body;
+
+    if (!to || !message) {
+        return res.status(400).send('缺少 to 或 message 欄位');
+    }
+
+    // 設置推送訊息的內容
+    const payload = {
+        to: to,
+        messages: [
+            {
+                type: 'text',
+                text: message,
+            },
+        ],
+    };
+
+    // 使用 LINE SDK 發送推送訊息
+    client.pushMessage(payload.to, payload.messages)
+        .then(() => {
+            res.status(200).send('訊息發送成功');
+        })
+        .catch((err) => {
+            console.error('發送訊息失敗:', err);
+            res.status(500).send('訊息發送失敗');
+        });
+});/* 
 app.post('/webhook', (req, res) => {
     Promise
         .all(req.body.events.map(handleEvent))
@@ -17,7 +46,7 @@ app.post('/webhook', (req, res) => {
             console.error(err);
             res.status(500).end();
         });
-});
+}); */
 
 const client = new line.Client(config);
 
@@ -28,7 +57,7 @@ function handleEvent(event) {
 
     const reply = {
         type: 'text',
-        text: `GoLearning 收到你的訊息: ${event.message.text}`,
+        text: `我是Bot我最棒!GoLearning 收到你的訊息: ${event.message.text}`,
     };
 
     // 使用 replyToken 回應訊息
