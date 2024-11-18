@@ -19,22 +19,22 @@ app.post('/webhook', (req, res) => {
         });
 });
 
+const client = new line.Client(config);
+
 function handleEvent(event) {
     if (event.type !== 'message' || event.message.type !== 'text') {
         return Promise.resolve(null);
     }
 
-    const replyMessage = {
+    const reply = {
         type: 'text',
-        text: `你說了: ${event.message.text}`,
+        text: `GoLearning 收到你的訊息: ${event.message.text}`,
     };
 
-    return client.replyMessage(event.replyToken, replyMessage);
+    // 使用 replyToken 回應訊息
+    return client.replyMessage(event.replyToken, reply);
 }
 
-const client = new line.Client(config);
-
-// 啟動伺服器
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
