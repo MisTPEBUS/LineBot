@@ -37,7 +37,37 @@ app.post('/send-message', (req, res) => {
             console.error('發送訊息失敗:', err);
             res.status(500).send('訊息發送失敗');
         });
-});/* 
+});
+
+
+app.post('/webhook', (req, res) => {
+    Promise
+        .all(req.body.events.map(handleEvent))
+        .then((result) => res.json(result))
+        .catch((err) => {
+            console.error(err);
+            res.status(500).end();
+        });
+});
+
+
+function handleEvent(event) {
+    if (event.type === 'join') {
+        // 當 Bot 加入群組時，LINE 會發送一個 join 事件
+        const groupId = event.source.groupId;
+        console.log(`Bot 被邀請加入群組，群組 ID 為: ${groupId}`);
+
+        // 您可以將 groupId 儲存起來以供日後使用
+        return client.pushMessage(groupId, {
+            type: 'text',
+            text: '大家好！很高興加入這個群組！',
+        });
+    }
+
+    return Promise.resolve(null);
+}
+
+/* 
 app.post('/webhook', (req, res) => {
     Promise
         .all(req.body.events.map(handleEvent))
