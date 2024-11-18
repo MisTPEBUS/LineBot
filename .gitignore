@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by testing tools
+coverage/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# MacOS Finder attributes
+.DS_Store
+
+# Visual Studio Code workspace settings
+.vscode/
+
+# Build artifacts
+dist/
+build/
+
+# LINE credentials (如果您使用 dotenv 來儲存憑證)
+.env.local
+.env.d
