@@ -34,7 +34,6 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 
 app.post('/send-msg', (req, res) => {
     const { to, msg } = req.body;
-    console.log('req.body', req)
     console.log('to:', to);
     console.log('msg:', msg);
     if (!to || !msg) {
