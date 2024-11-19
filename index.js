@@ -21,23 +21,24 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 
 app.post('/send-msg', (req, res) => {
     const { to, msg } = req.body;
-    console.lost('to:', to);
-    console.lost('msg:', msg);
+    console.log('req.body', req.body)
+    console.log('to:', to);
+    console.log('msg:', msg);
     if (!to || !msg) {
         return res.status(400).send('缺少 to 或 msg 欄位');
     }
 
-    client.pushMessage(to, {
-        type: 'text',
-        text: msg,
-    })
-        .then(() => {
-            res.status(200).send('訊息發送成功');
-        })
-        .catch((err) => {
-            console.error('發送訊息失敗:', err);
-            res.status(500).send('訊息發送失敗');
-        });
+    /*  client.pushMessage(to, {
+         type: 'text',
+         text: msg,
+     })
+         .then(() => {
+             res.status(200).send('訊息發送成功');
+         })
+         .catch((err) => {
+             console.error('發送訊息失敗:', err);
+             res.status(500).send('訊息發送失敗');
+         }); */
 });
 
 const client = new line.Client(config);
