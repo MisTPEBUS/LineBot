@@ -1,5 +1,10 @@
 const line = require('@line/bot-sdk');
-const express = require('express');
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+const cors = require("cors");
+const dotenv = require("dotenv");
 
 const config = {
     channelAccessToken: 'gapbL9VVWnPy8b16qW87bwkxfy8tZpLzjtSXdaHA3KPYsUKRih4ogT1nnvV8K3Uog1dyuk2ErkIIfst2fn2POxA4W9ea8aNr5HXQ4/bB6duYqRvcSssNcNkinIZwuro5QuHNEsthIHTu/lucdai69wdB04t89/1O/w1cDnyilFU=',  // 替換為您的 Channel Access Token
@@ -7,7 +12,15 @@ const config = {
 };
 
 const app = express();
+const session = require('express-session');
+app.use(session({ secret: 'a0b71be06ffdb0a5edab1a54707f5751', resave: true, saveUninitialized: true }));
+app.use(cors());
+
+app.use(logger("dev"));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
 
 app.post('/webhook', line.middleware(config), (req, res) => {
     Promise
@@ -21,24 +34,24 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 
 app.post('/send-msg', (req, res) => {
     const { to, msg } = req.body;
-    console.log('req.body', req.body)
+    console.log('req.body', req)
     console.log('to:', to);
     console.log('msg:', msg);
     if (!to || !msg) {
         return res.status(400).send('缺少 to 或 msg 欄位');
     }
-
-    /*  client.pushMessage(to, {
-         type: 'text',
-         text: msg,
-     })
-         .then(() => {
-             res.status(200).send('訊息發送成功');
-         })
-         .catch((err) => {
-             console.error('發送訊息失敗:', err);
-             res.status(500).send('訊息發送失敗');
-         }); */
+    res.status(200).json(req.body);
+    client.pushMessage(to, {
+        type: 'text',
+        text: msg,
+    })
+        .then(() => {
+            res.status(200).send('訊息發送成功');
+        })
+        .catch((err) => {
+            console.error('發送訊息失敗:', err);
+            res.status(500).send('訊息發送失敗');
+        });
 });
 
 const client = new line.Client(config);
