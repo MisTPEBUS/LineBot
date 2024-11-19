@@ -30,7 +30,7 @@ function handleEvent(event) {
         // 您可以將 groupId 儲存起來以供日後使用
         return client.pushMessage(groupId, {
             type: 'text',
-            text: '大家好！很高興加入這個群組！',
+            text: '大家好！我是BOT！我最棒!',
         });
     }
     if (event.type === 'message' && event.message.type === 'text') {
