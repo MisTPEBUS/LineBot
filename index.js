@@ -21,6 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+const client = new line.Client(config);
 
 app.post('/webhook', line.middleware(config), (req, res) => {
     Promise
@@ -36,10 +37,11 @@ app.post('/send-msg', (req, res) => {
     const { to, msg } = req.body;
     console.log('to:', to);
     console.log('msg:', msg);
+
     if (!to || !msg) {
         return res.status(400).send('缺少 to 或 msg 欄位');
     }
-    res.status(200).json(req.body);
+
     client.pushMessage(to, {
         type: 'text',
         text: msg,
@@ -49,11 +51,90 @@ app.post('/send-msg', (req, res) => {
         })
         .catch((err) => {
             console.error('發送訊息失敗:', err);
-            res.status(500).send('訊息發送失敗');
+            // 確保在失敗的時候只發送一次回應
+            if (!res.headersSent) {
+                res.status(500).send('訊息發送失敗');
+            }
         });
 });
 
-const client = new line.Client(config);
+app.post('send-carousel', (req, res) => {
+    const { to, msg } = req.body;
+    console.log('to:', to);
+    console.log('msg:', msg);
+    const weatherCarouselTemplate = {
+        type: 'template',
+        altText: '天氣預報 Carousel',
+        template: {
+            type: 'carousel',
+            columns: [
+                {
+                    thumbnailImageUrl: 'https://unsplash.com/photos/a-cloud-with-rain-coming-out-of-it-2h3if0_eQYQ',
+                    title: '11月19日 - 三重天氣',
+                    text: '陰天，間歇性降雨和雷雨，氣溫 19°C - 21°C',
+                    actions: [
+                        {
+                            type: 'postback',
+                            label: '詳細天氣資訊',
+                            data: 'action=weather&date=2024-11-19'
+                        },
+                        {
+                            type: 'uri',
+                            label: '查看更多',
+                            uri: 'https://www.cwb.gov.tw'
+                        }
+                    ]
+                },
+                {
+                    thumbnailImageUrl: 'https://unsplash.com/photos/a-yellow-sun-with-sunglasses-on-its-face-ccFpvj9Lghg',
+                    title: '11月20日 - 三重天氣',
+                    text: '少量降雨，氣溫 19°C - 21°C',
+                    actions: [
+                        {
+                            type: 'postback',
+                            label: '詳細天氣資訊',
+                            data: 'action=weather&date=2024-11-20'
+                        },
+                        {
+                            type: 'uri',
+                            label: '查看更多',
+                            uri: 'https://www.cwb.gov.tw'
+                        }
+                    ]
+                },
+                {
+                    thumbnailImageUrl: 'https://example.com/weather_cloudy.jpg',
+                    title: '11月21日 - 三重天氣',
+                    text: '多雲，氣溫 18°C - 21°C',
+                    actions: [
+                        {
+                            type: 'postback',
+                            label: '詳細天氣資訊',
+                            data: 'action=weather&date=2024-11-21'
+                        },
+                        {
+                            type: 'uri',
+                            label: '查看更多',
+                            uri: 'https://www.cwb.gov.tw'
+                        }
+                    ]
+                }
+            ]
+        }
+    };
+
+    // 發送 Carousel 模板訊息
+    client.pushMessage(to, weatherCarouselTemplate)
+        .then(() => {
+            console.log('訊息發送成功');
+        })
+        .catch((err) => {
+            console.error('訊息發送失敗:', err);
+        });
+})
+
+
+
 
 function handleEvent(event) {
     if (event.type === 'join') {
