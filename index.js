@@ -21,7 +21,8 @@ app.post('/webhook', (req, res) => {
 
 app.post('/send-msg', (req, res) => {
     const { to, msg } = req.body;
-
+    console.lost('to:', to);
+    console.lost('msg:', msg);
     if (!to || !msg) {
         return res.status(400).send('缺少 to 或 msg 欄位');
     }
