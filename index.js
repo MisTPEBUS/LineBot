@@ -58,7 +58,7 @@ app.post('/send-msg', (req, res) => {
         });
 });
 
-app.post('send-carousel', (req, res) => {
+app.post('/send-carousel', (req, res) => {
     const { to, msg } = req.body;
     console.log('to:', to);
     console.log('msg:', msg);
